@@ -1,6 +1,6 @@
 // Code by Abhigyann :)
 import { Link } from "react-router-dom";
-import { FaYoutube, FaTwitter, FaLinkedin } from "react-icons/fa";
+import { FaYoutube, FaXTwitter, FaLinkedin, FaTelegram } from "react-icons/fa6";
 
 const Footer = () => {
   return (
@@ -70,14 +70,17 @@ const Footer = () => {
 
         {/* Social Media Links */}
         <div className="flex justify-center space-x-6 mt-10">
-          <a href="https://youtube.com" target="_blank" rel="noopener noreferrer">
-            <FaYoutube className="text-xl text-gray-600 hover:text-red-500 transition" />
+          <a href="https://www.youtube.com/@TheMetaverseStreetJournal" target="_blank" rel="noopener noreferrer">
+            <FaYoutube className="text-2xl text-gray-600 hover:text-red-500 transition" />
           </a>
-          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-            <FaTwitter className="text-xl text-gray-600 hover:text-blue-400 transition" />
+          <a href="https://x.com/Metaverseditor" target="_blank" rel="noopener noreferrer">
+            <FaXTwitter className="text-2xl text-gray-600 hover:text-black transition" />
           </a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-            <FaLinkedin className="text-xl text-gray-600 hover:text-blue-700 transition" />
+          <a href="https://www.linkedin.com/company/metaversenews" target="_blank" rel="noopener noreferrer">
+            <FaLinkedin className="text-2xl text-gray-600 hover:text-blue-700 transition" />
+          </a>
+          <a href="https://www.t.me/@TheMetaverseStreetJournal" target="_blank" rel="noopener noreferrer">
+            <FaTelegram className="text-2xl text-gray-600 hover:text-blue-500 transition" />
           </a>
         </div>
 
