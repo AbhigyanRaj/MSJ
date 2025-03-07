@@ -1,10 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { auth, logout } from "../services/firebase";
-import { Menu, X, Search, LogIn, User, Home, Video, Bell, Settings, Star, BookOpen, Calendar, Globe, MessageSquare, Users, Bookmark } from "lucide-react"; // Icons
+import { useRole } from "../context/RoleContext"; // ✅ Import RoleContext
+import {
+  Menu, X, Search, LogIn, User, Home, Video, Bell, Settings, Star,
+  BookOpen, Calendar, Globe, MessageSquare, Users, Bookmark, LayoutDashboard
+} from "lucide-react"; // Icons
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
+  const { role } = useRole(); // ✅ Fetch user role
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,6 +42,19 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // ✅ Determine the correct dashboard route based on user role
+  const getDashboardRoute = () => {
+    switch (role) {
+      case "super-admin": return "/dashboard/superadmin";
+      case "admin": return "/dashboard/admin";
+      case "editor": return "/dashboard/editor";
+      case "journalist": return "/dashboard/journalist";
+      case "advertiser": return "/dashboard/advertiser";
+      case "partner": return "/dashboard/partner";
+      default: return "/dashboard";
+    }
+  };
 
   return (
     <nav className="w-full px-4 md:px-6 py-4 flex justify-between items-center bg-white border-b border-gray-200 relative mt-10">
@@ -106,6 +124,12 @@ const Navbar = () => {
                     <span>Home</span>
                   </Link>
                 </li>
+                <li>
+                  <Link to={getDashboardRoute()} className="flex items-center space-x-2 hover:text-gray-300 transition">
+                    <LayoutDashboard size={18} />
+                    <span>Dashboard</span>
+                  </Link>
+                </li>
               </>
             )}
             <li>
@@ -127,36 +151,6 @@ const Navbar = () => {
               </Link>
             </li>
             <li>
-              <Link to="/member-since" className="flex items-center space-x-2 hover:text-gray-300 transition">
-                <Users size={18} />
-                <span>Member Since</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/news-coin" className="flex items-center space-x-2 hover:text-gray-300 transition">
-                <BookOpen size={18} />
-                <span>News Coin</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/favorite-topics" className="flex items-center space-x-2 hover:text-gray-300 transition">
-                <Star size={18} />
-                <span>Favorite Topics</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/discover-topics" className="flex items-center space-x-2 hover:text-gray-300 transition">
-                <Globe size={18} />
-                <span>Discover Topics</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/authors-followed" className="flex items-center space-x-2 hover:text-gray-300 transition">
-                <Bookmark size={18} />
-                <span>Authors Followed</span>
-              </Link>
-            </li>
-            <li>
               <Link to="/forum" className="flex items-center space-x-2 hover:text-gray-300 transition">
                 <MessageSquare size={18} />
                 <span>Forum</span>
@@ -166,12 +160,6 @@ const Navbar = () => {
               <Link to="/events" className="flex items-center space-x-2 hover:text-gray-300 transition">
                 <Calendar size={18} />
                 <span>Events</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/about" className="flex items-center space-x-2 hover:text-gray-300 transition">
-                <BookOpen size={18} />
-                <span>About Us</span>
               </Link>
             </li>
             <li>
