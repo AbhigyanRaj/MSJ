@@ -1,9 +1,10 @@
-// Code by abhigyann:)
+// Code by Abhigyann :)
 import { useEffect, useState } from "react";
 import { auth, db, logout } from "../services/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import { FaHome, FaSignOutAlt, FaEdit, FaSave } from "react-icons/fa";
 
 const Profile = () => {
@@ -12,6 +13,8 @@ const Profile = () => {
     name: "",
     email: "",
     bio: "",
+    role: "",
+    memberSince: "",
     socialLinks: { twitter: "", linkedin: "", github: "" },
   });
   const [isEditing, setIsEditing] = useState(false);
@@ -32,6 +35,8 @@ const Profile = () => {
             name: currentUser.displayName || `User${Math.floor(Math.random() * 1000)}`,
             email: currentUser.email,
             bio: "This is your bio. Update it.",
+            role: "journalist",
+            memberSince: new Date().toISOString().split("T")[0], // Store as YYYY-MM-DD
             socialLinks: { twitter: "", linkedin: "", github: "" },
           };
           await setDoc(userDocRef, newUser);
@@ -63,144 +68,160 @@ const Profile = () => {
     }
   };
 
-  const emojiList = ["😃", "🤩", "🐼", "🦁", "🐵", "🐹", "💡"];
-  const bgColorList = ["bg-white"];
-
-  const randomEmoji = emojiList[Math.floor(Math.random() * emojiList.length)];
-  const randomBg = bgColorList[Math.floor(Math.random() * bgColorList.length)];
-
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-6 py-8 ">
-      <div className="w-full max-w-lg bg-white shadow-lg rounded-xl p-6 border ">
-        <h2 className="text-2xl font-semibold text-center text-gray-900 mb-4">Profile</h2>
+    <>
+      <Navbar />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-6 py-8">
+        <div className="w-full max-w-lg bg-white shadow-lg rounded-xl p-6 border border-gray-200">
+          <h2 className="text-2xl font-semibold text-center text-gray-900 mb-6">User Profile</h2>
 
-        {user && (
-          <div className="flex flex-col items-center">
-            {/* Profile Avatar */}
-            <div className={`w-28 h-28 ${randomBg} rounded-full flex items-center justify-center text-gray-700 text-5xl font-semibold border`}>
-            {randomEmoji}
-            </div>
-
-            {/* User Details */}
-            <div className="w-full mt-4 space-y-3">
-              <div>
-                <label className="text-gray-600 font-medium">Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={profileData.name}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="w-full px-4 py-2 mt-1 rounded-md border focus:outline-none focus:ring focus:border-blue-400"
-                />
+          {user && (
+            <div className="flex flex-col items-center">
+              {/* Profile Avatar */}
+              <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-700 text-4xl font-semibold border">
+                {profileData.name.charAt(0).toUpperCase()}
               </div>
 
-              <div>
-                <label className="text-gray-600 font-medium">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={profileData.email}
-                  disabled
-                  className="w-full px-4 py-2 mt-1 rounded-md border bg-gray-100"
-                />
-              </div>
-
-              <div>
-                <label className="text-gray-600 font-medium">Bio</label>
-                <textarea
-                  name="bio"
-                  value={profileData.bio}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="w-full px-4 py-2 mt-1 rounded-md border focus:outline-none focus:ring focus:border-blue-400"
-                />
-              </div>
-
-              {/* Social Links */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* User Details */}
+              <div className="w-full mt-6 space-y-4">
                 <div>
-                  <label className="text-gray-600 font-medium">Twitter</label>
+                  <label className="text-gray-600 font-medium">Name</label>
                   <input
                     type="text"
-                    name="twitter"
-                    value={profileData.socialLinks.twitter}
+                    name="name"
+                    value={profileData.name}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    className="w-full px-4 py-2 mt-1 rounded-md border"
+                    className="w-full px-4 py-2 mt-1 rounded-md border focus:outline-none focus:ring focus:border-blue-400 bg-gray-50"
                   />
                 </div>
+
                 <div>
-                  <label className="text-gray-600 font-medium">LinkedIn</label>
+                  <label className="text-gray-600 font-medium">Email</label>
                   <input
-                    type="text"
-                    name="linkedin"
-                    value={profileData.socialLinks.linkedin}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className="w-full px-4 py-2 mt-1 rounded-md border"
+                    type="email"
+                    name="email"
+                    value={profileData.email}
+                    disabled
+                    className="w-full px-4 py-2 mt-1 rounded-md border bg-gray-100"
                   />
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-gray-600 font-medium">Role</label>
+                    <input
+                      type="text"
+                      name="role"
+                      value={profileData.role}
+                      disabled
+                      className="w-full px-4 py-2 mt-1 rounded-md border bg-gray-100"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-gray-600 font-medium">Member Since</label>
+                    <input
+                      type="text"
+                      name="memberSince"
+                      value={profileData.memberSince}
+                      disabled
+                      className="w-full px-4 py-2 mt-1 rounded-md border bg-gray-100"
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="text-gray-600 font-medium">GitHub</label>
-                  <input
-                    type="text"
-                    name="github"
-                    value={profileData.socialLinks.github}
+                  <label className="text-gray-600 font-medium">Bio</label>
+                  <textarea
+                    name="bio"
+                    value={profileData.bio}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    className="w-full px-4 py-2 mt-1 rounded-md border"
+                    className="w-full px-4 py-2 mt-1 rounded-md border focus:outline-none focus:ring focus:border-blue-400 bg-gray-50"
                   />
+                </div>
+
+                {/* Social Links */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-gray-600 font-medium">Twitter</label>
+                    <input
+                      type="text"
+                      name="twitter"
+                      value={profileData.socialLinks.twitter}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="w-full px-4 py-2 mt-1 rounded-md border bg-gray-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-gray-600 font-medium">LinkedIn</label>
+                    <input
+                      type="text"
+                      name="linkedin"
+                      value={profileData.socialLinks.linkedin}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="w-full px-4 py-2 mt-1 rounded-md border bg-gray-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-gray-600 font-medium">GitHub</label>
+                    <input
+                      type="text"
+                      name="github"
+                      value={profileData.socialLinks.github}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="w-full px-4 py-2 mt-1 rounded-md border bg-gray-50"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-between w-full mt-6">
-              {/* Home Button */}
-              <button
-                className="px-4 py-2 flex items-center bg-gray-800 text-white text-sm font-medium rounded-3xl hover:bg-gray-900 transition"
-                onClick={() => navigate("/")}
-              >
-               Home
-              </button>
-
-              {/* Edit / Save Profile */}
-              {isEditing ? (
+              {/* Action Buttons */}
+              <div className="flex justify-between w-full mt-6">
                 <button
-                  onClick={handleSave}
-                  className="px-4 py-2 flex items-center bg-green-600 text-white text-sm font-medium rounded-3xl hover:bg-green-700 transition"
+                  className="px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-3xl hover:bg-gray-900 transition"
+                  onClick={() => navigate("/")}
                 >
-                   Save
+                  Home
                 </button>
-              ) : (
+
+                {isEditing ? (
+                  <button
+                    onClick={handleSave}
+                    className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-3xl hover:bg-green-700 transition"
+                  >
+                    Save
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-3xl hover:bg-blue-700 transition"
+                  >
+                    Edit
+                  </button>
+                )}
+
                 <button
-                  onClick={() => setIsEditing(true)}
-                  className="px-4 py-2 flex items-center bg-blue-600 text-white text-sm font-medium rounded-3xl hover:bg-blue-700 transition"
+                  onClick={() => {
+                    logout();
+                    navigate("/auth");
+                  }}
+                  className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-3xl hover:bg-red-700 transition"
                 >
-                   Edit
+                  Logout
                 </button>
-              )}
-
-              {/* Logout Button */}
-              <button
-                onClick={() => {
-                  logout();
-                  navigate("/auth");
-                }}
-                className="px-4 py-2 flex items-center bg-red-600 text-white text-sm font-medium rounded-3xl hover:bg-red-700 transition"
-              >
-                 Logout
-              </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* If no user */}
-        {!user && <p className="text-center text-gray-500 mt-4">No user logged in.</p>}
+          {!user && <p className="text-center text-gray-500 mt-4">No user logged in.</p>}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
