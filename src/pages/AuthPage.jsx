@@ -11,6 +11,7 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("journalist"); // Default role
+  const [invitationCode, setInvitationCode] = useState(""); // New Invitation Code Field
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { setRole: setUserRole } = useRole(); // Access role state
@@ -26,8 +27,8 @@ const AuthPage = () => {
       response = await signup(email, password);
       if (response.success && response.user) {
         const userRef = doc(db, "user", response.user.uid);
-        await setDoc(userRef, { email, role }, { merge: true });
-        setUserRole(role); // Update role in context
+        await setDoc(userRef, { email, role, invitationCode }, { merge: true }); // Store Invitation Code
+        setUserRole(role);
       }
     }
 
@@ -51,7 +52,7 @@ const AuthPage = () => {
         await setDoc(userRef, { email: response.user.email, role: userRole }, { merge: true });
       }
 
-      setUserRole(userRole); // Update role in context
+      setUserRole(userRole);
       navigateToDashboard(userRole);
     } else {
       setError(response.message);
@@ -101,18 +102,30 @@ const AuthPage = () => {
           />
 
           {!isLogin && (
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:border-blue-500"
-            >
-              <option value="admin">Admin</option>
-              <option value="editor">Editor</option>
-              <option value="journalist">Journalist</option>
-              <option value="advertiser">Advertiser</option>
-              <option value="partner">Partner</option>
-              <option value="superadmin">Super Admin</option>
-            </select>
+            <>
+              {/* Role Selection */}
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:border-blue-500"
+              >
+                <option value="admin">Admin</option>
+                <option value="editor">Editor</option>
+                <option value="journalist">Journalist</option>
+                <option value="advertiser">Advertiser</option>
+                <option value="partner">Partner</option>
+                <option value="superadmin">Super Admin</option>
+              </select>
+
+              {/* Optional Invitation Code Field */}
+              <input
+                type="text"
+                placeholder="Invitation Code (Optional)"
+                value={invitationCode}
+                onChange={(e) => setInvitationCode(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:border-blue-500"
+              />
+            </>
           )}
 
           <button className="w-full px-6 py-3 bg-black text-white rounded-3xl hover:bg-gray-900 transition">
