@@ -1,4 +1,4 @@
-// Code by abhigyann:)
+// Code by abhigyann :)
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -27,32 +27,45 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-// 🔹 Function to Assign Role if Missing
-const assignRoleIfMissing = async (user) => {
+// 🔹 Function to format the date as "13 March 2025"
+const formatDate = (date) => {
+  const options = { day: "numeric", month: "long", year: "numeric" };
+  return new Date(date).toLocaleDateString("en-US", options);
+};
+
+// 🔹 Function to Assign Role and MemberSince if Missing
+const assignUserFieldsIfMissing = async (user) => {
   if (!user) return;
 
   const userDocRef = doc(db, "user", user.uid);
   const docSnap = await getDoc(userDocRef);
-
+  
   if (!docSnap.exists()) {
-    // Assign a default role (e.g., "journalist") if user is new
+    // ✅ Assign Default Role and MemberSince for New Users
     const newUser = {
       uid: user.uid,
       name: user.displayName || `User${Math.floor(Math.random() * 1000)}`,
       email: user.email,
-      bio: "This is your bio. Update it.",
+      bio: " ",
       role: "journalist", // Default role
+      memberSince: formatDate(new Date()), // Store formatted date
       socialLinks: { twitter: "", linkedin: "", github: "" },
     };
     await setDoc(userDocRef, newUser);
     return newUser;
   } else {
     const userData = docSnap.data();
-    if (!userData.role) {
-      // If role field is missing, assign "journalist"
-      await updateDoc(userDocRef, { role: "journalist" });
+
+    // ✅ Add missing fields if they don't exist
+    const updates = {};
+    if (!userData.role) updates.role = "journalist";
+    if (!userData.memberSince) updates.memberSince = formatDate(new Date());
+
+    if (Object.keys(updates).length > 0) {
+      await updateDoc(userDocRef, updates);
     }
-    return userData;
+
+    return { ...userData, ...updates };
   }
 };
 
@@ -60,7 +73,7 @@ const assignRoleIfMissing = async (user) => {
 const onAuthChange = (callback) => {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      const userData = await assignRoleIfMissing(user);
+      const userData = await assignUserFieldsIfMissing(user);
       callback(userData);
     } else {
       callback(null);
@@ -73,7 +86,7 @@ const signup = async (email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-    await assignRoleIfMissing(user);
+    await assignUserFieldsIfMissing(user);
     return { success: true, user };
   } catch (error) {
     return { success: false, message: error.message };
@@ -84,7 +97,7 @@ const signup = async (email, password) => {
 const login = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    await assignRoleIfMissing(userCredential.user);
+    await assignUserFieldsIfMissing(userCredential.user);
     return { success: true, user: userCredential.user };
   } catch (error) {
     return { success: false, message: error.message };
@@ -95,7 +108,7 @@ const login = async (email, password) => {
 const googleLogin = async () => {
   try {
     const userCredential = await signInWithPopup(auth, googleProvider);
-    await assignRoleIfMissing(userCredential.user);
+    await assignUserFieldsIfMissing(userCredential.user);
     return { success: true, user: userCredential.user };
   } catch (error) {
     return { success: false, message: error.message };
