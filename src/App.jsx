@@ -15,6 +15,7 @@ import EditorDashboard from "./pages/dashboards/EditorDashboard";
 import JournalistDashboard from "./pages/dashboards/JournalistDashboard";
 import AdvertiserDashboard from "./pages/dashboards/AdvertiserDashboard";
 import PartnerDashboard from "./pages/dashboards/PartnerDashboard";
+import Marquee from "./components/Marquee2";
 
 // Role-Based Route Protection Component
 const ProtectedRoute = ({ element, allowedRoles }) => {
@@ -32,6 +33,7 @@ const App = () => {
     <Router> {/* Moved Router to wrap everything */}
       <AuthProvider>
         <RoleProvider>
+          <Marquee/>
           <div className="min-h-screen flex flex-col">
           
             <Routes>
@@ -50,7 +52,7 @@ const App = () => {
             </Routes>
 
           </div>
-
+          
           <BottomNav /> {/* Always visible on mobile */}
         </RoleProvider>
       </AuthProvider>
